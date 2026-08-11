@@ -7,11 +7,13 @@ import styles from './page.module.css';
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function fetchCount() {
-  const { count, error } = await supabase
+  // Count unique attendees who have checked in (not total attempts)
+  const { data, error } = await supabase
     .from('checkins')
-    .select('*', { count: 'exact', head: true });
+    .select('attendee_id');
   if (error) throw error;
-  return count ?? 0;
+  const unique = new Set((data ?? []).map(r => r.attendee_id));
+  return unique.size;
 }
 
 async function findAttendee(phone) {
@@ -22,6 +24,15 @@ async function findAttendee(phone) {
     .limit(1);
   if (error) throw error;
   return data?.[0] ?? null;
+}
+
+async function hasCheckedIn(attendeeId) {
+  const { count, error } = await supabase
+    .from('checkins')
+    .select('*', { count: 'exact', head: true })
+    .eq('attendee_id', attendeeId);
+  if (error) throw error;
+  return (count ?? 0) > 0;
 }
 
 async function createCheckIn(attendeeId) {
@@ -78,6 +89,12 @@ export default function CheckInPage() {
     try {
       const attendee = await findAttendee(trimmed);
       if (attendee) {
+        // Check if this attendee has already checked in
+        const alreadyIn = await hasCheckedIn(attendee.id);
+        if (alreadyIn) {
+          setError(`${attendee.name} has already checked in today. ✋`);
+          return;
+        }
         await createCheckIn(attendee.id);
         const newCount = await fetchCount();
         setCount(newCount);
