@@ -263,4 +263,4 @@ npm run dev
 
 ---
 
-*Built in ~1.5 hours as part of a technical assessment.*
+*Built in ~ 30mins as part of a technical assessment.*
