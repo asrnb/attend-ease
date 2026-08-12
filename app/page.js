@@ -163,7 +163,20 @@ export default function CheckInPage() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <main className={styles.container}>
+    <>
+      {/* ── Floating Neo-Brutalist Shapes ── */}
+      <div className={styles.shapes} aria-hidden="true">
+        <div className={`${styles.shape} ${styles.shapeYellowSquare}`} />
+        <div className={`${styles.shape} ${styles.shapePinkCircle}`} />
+        <div className={`${styles.shape} ${styles.shapeBlueRect}`} />
+        <div className={`${styles.shape} ${styles.shapeGreenSquare}`} />
+        <div className={`${styles.shape} ${styles.shapeYellowSmall}`} />
+        <div className={`${styles.shape} ${styles.shapePinkTall}`} />
+        <div className={`${styles.shape} ${styles.shapeOutlineSquare}`} />
+        <div className={`${styles.shape} ${styles.shapeBlueCircle}`} />
+      </div>
+
+      <main className={styles.container}>
 
         {/* Header */}
         <header className={styles.header}>
@@ -342,6 +355,7 @@ export default function CheckInPage() {
         </footer>
 
       </main>
+    </>
   );
 }
 

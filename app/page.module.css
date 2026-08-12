@@ -514,6 +514,155 @@
 
 .footer strong { color: var(--black); font-weight: 800; }
 
+/* ── Floating Background Shapes ── */
+.shapes {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Base shape: thick black border, flat fill */
+.shape {
+  position: absolute;
+  border: 3px solid var(--black);
+}
+
+/* 1. Large yellow square — top-left, slow float + tilt */
+.shapeYellowSquare {
+  width: 64px;
+  height: 64px;
+  background: var(--yellow);
+  top: 8%;
+  left: 4%;
+  box-shadow: 4px 4px 0 var(--black);
+  animation: floatTilt 6s ease-in-out infinite;
+}
+
+/* 2. Pink circle — top-right, gentle bounce */
+.shapePinkCircle {
+  width: 52px;
+  height: 52px;
+  background: var(--pink);
+  border-radius: 50%;
+  top: 12%;
+  right: 5%;
+  box-shadow: 4px 4px 0 var(--black);
+  animation: floatBounce 5s ease-in-out infinite;
+  animation-delay: -1.5s;
+}
+
+/* 3. Blue wide rectangle — mid-left, horizontal drift */
+.shapeBlueRect {
+  width: 88px;
+  height: 32px;
+  background: var(--blue);
+  top: 42%;
+  left: 2%;
+  box-shadow: 4px 4px 0 var(--black);
+  animation: floatDrift 7s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+/* 4. Green square — bottom-right, counter-rotate */
+.shapeGreenSquare {
+  width: 50px;
+  height: 50px;
+  background: var(--green);
+  bottom: 18%;
+  right: 4%;
+  box-shadow: 4px 4px 0 var(--black);
+  animation: floatTiltReverse 8s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* 5. Small yellow square — mid-left, quick bob */
+.shapeYellowSmall {
+  width: 28px;
+  height: 28px;
+  background: var(--yellow);
+  top: 60%;
+  left: 3%;
+  box-shadow: 3px 3px 0 var(--black);
+  animation: floatBounce 4s ease-in-out infinite;
+  animation-delay: -0.8s;
+}
+
+/* 6. Tall pink rectangle — lower-right, slow oscillate */
+.shapePinkTall {
+  width: 32px;
+  height: 80px;
+  background: var(--pink);
+  bottom: 10%;
+  right: 6%;
+  box-shadow: 4px 4px 0 var(--black);
+  animation: floatDrift 9s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+/* 7. Outline-only square (no fill) — upper-mid, spinning slow */
+.shapeOutlineSquare {
+  width: 42px;
+  height: 42px;
+  background: transparent;
+  top: 30%;
+  right: 3%;
+  animation: spinSlow 12s linear infinite;
+}
+
+/* 8. Small blue circle — bottom-left, float up/down */
+.shapeBlueCircle {
+  width: 38px;
+  height: 38px;
+  background: var(--blue);
+  border-radius: 50%;
+  bottom: 28%;
+  left: 4%;
+  box-shadow: 3px 3px 0 var(--black);
+  animation: floatBounce 6.5s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+/* ── Keyframes ── */
+
+/* Float up/down with a slight clockwise tilt */
+@keyframes floatTilt {
+  0%   { transform: translateY(0px)   rotate(0deg);  }
+  30%  { transform: translateY(-18px) rotate(6deg);  }
+  60%  { transform: translateY(-8px)  rotate(-3deg); }
+  100% { transform: translateY(0px)   rotate(0deg);  }
+}
+
+/* Float up/down with a counter-clockwise tilt */
+@keyframes floatTiltReverse {
+  0%   { transform: translateY(0px)   rotate(0deg);  }
+  35%  { transform: translateY(-16px) rotate(-8deg); }
+  70%  { transform: translateY(-6px)  rotate(4deg);  }
+  100% { transform: translateY(0px)   rotate(0deg);  }
+}
+
+/* Pure vertical bounce */
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0px);   }
+  50%       { transform: translateY(-22px); }
+}
+
+/* Horizontal + vertical combined drift */
+@keyframes floatDrift {
+  0%   { transform: translate(0px,   0px);   }
+  25%  { transform: translate(10px, -14px);  }
+  50%  { transform: translate(4px,  -22px);  }
+  75%  { transform: translate(-6px, -10px);  }
+  100% { transform: translate(0px,   0px);   }
+}
+
+/* Continuous slow spin */
+@keyframes spinSlow {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .card { padding: 1.5rem 1.125rem; }
