@@ -8,7 +8,7 @@
 
 | | |
 |---|---|
-| **Live URL** | *(deploying — will update shortly)* |
+| **Live URL** | [attend-ease-vert.vercel.app](https://attend-ease-vert.vercel.app) |
 | **GitHub Repo** | [github.com/asrnb/attend-ease](https://github.com/asrnb/attend-ease) |
 
 ---
