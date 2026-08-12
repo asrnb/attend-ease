@@ -4,6 +4,30 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import styles from './page.module.css';
 
+// ─── Input Validation ─────────────────────────────────────────────────────────
+
+// Strips any HTML tags from a string (prevents script injection)
+function stripHtml(str) {
+  return str.replace(/<[^>]*>/g, '').trim();
+}
+
+// Phone: digits, spaces, dashes, plus sign only — 7 to 15 chars
+function validatePhone(phone) {
+  const cleaned = phone.replace(/\s|-/g, '');
+  if (!/^[+]?[0-9]{7,15}$/.test(cleaned)) {
+    return 'Enter a valid phone number (7–15 digits).';
+  }
+  return null;
+}
+
+// Name: no HTML, 2–80 chars, not just whitespace
+function validateName(name) {
+  const clean = stripHtml(name);
+  if (clean.length < 2)  return 'Name must be at least 2 characters.';
+  if (clean.length > 80) return 'Name is too long (max 80 characters).';
+  return null;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function fetchCount() {
@@ -65,8 +89,9 @@ export default function CheckInPage() {
   const [error, setError]         = useState('');
   const [loading, setLoading]     = useState(false);
 
-  const phoneRef = useRef(null);
-  const nameRef  = useRef(null);
+  const phoneRef   = useRef(null);
+  const nameRef    = useRef(null);
+  const lastAction = useRef(0); // cooldown timestamp
 
   // Load initial count
   useEffect(() => {
@@ -83,8 +108,19 @@ export default function CheckInPage() {
   // ── Check In (existing user) ──
   async function handleCheckIn() {
     const trimmed = phone.trim();
-    if (!trimmed) { setError('Please enter your phone number.'); return; }
 
+    // Client-side cooldown — 2 seconds between attempts
+    const now = Date.now();
+    if (now - lastAction.current < 2000) {
+      setError('Please wait a moment before trying again.');
+      return;
+    }
+
+    // Validate phone format
+    const phoneErr = validatePhone(trimmed);
+    if (phoneErr) { setError(phoneErr); return; }
+
+    lastAction.current = now;
     setLoading(true);
     setError('');
     try {
@@ -116,13 +152,23 @@ export default function CheckInPage() {
 
   // ── Register + Check In (new user) ──
   async function handleRegister() {
-    const trimmedName = name.trim();
-    if (!trimmedName) { setError('Please enter your name.'); return; }
+    // Sanitize and validate name
+    const sanitizedName = stripHtml(name);
+    const nameErr = validateName(sanitizedName);
+    if (nameErr) { setError(nameErr); return; }
+
+    // Client-side cooldown
+    const now = Date.now();
+    if (now - lastAction.current < 2000) {
+      setError('Please wait a moment before trying again.');
+      return;
+    }
+    lastAction.current = now;
 
     setLoading(true);
     setError('');
     try {
-      const attendee = await registerAttendee(trimmedName, pendingPhone);
+      const attendee = await registerAttendee(sanitizedName, pendingPhone);
       await createCheckIn(attendee.id);
       const newCount = await fetchCount();
       setCount(newCount);
