@@ -55,11 +55,12 @@ async function registerAttendee(name, phone) {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function CheckInPage() {
-  const [step, setStep]           = useState('phone'); // 'phone' | 'newuser' | 'success'
+  const [step, setStep]           = useState('phone'); // 'phone' | 'newuser' | 'success' | 'already'
   const [phone, setPhone]         = useState('');
   const [name, setName]           = useState('');
   const [pendingPhone, setPending] = useState('');
   const [successData, setSuccess] = useState({ name: '', msg: '' });
+  const [alreadyName, setAlreadyName] = useState('');
   const [count, setCount]         = useState(null);
   const [error, setError]         = useState('');
   const [loading, setLoading]     = useState(false);
@@ -92,7 +93,8 @@ export default function CheckInPage() {
         // Check if this attendee has already checked in
         const alreadyIn = await hasCheckedIn(attendee.id);
         if (alreadyIn) {
-          setError(`${attendee.name} has already checked in today. ✋`);
+          setAlreadyName(attendee.name);
+          setStep('already');
           return;
         }
         await createCheckIn(attendee.id);
@@ -145,6 +147,7 @@ export default function CheckInPage() {
     setPending('');
     setError('');
     setSuccess({ name: '', msg: '' });
+    setAlreadyName('');
   }
 
   function resetToPhone() {
@@ -160,13 +163,7 @@ export default function CheckInPage() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <>
-      {/* Background blobs */}
-      <div className={`${styles.blob} ${styles.blob1}`} />
-      <div className={`${styles.blob} ${styles.blob2}`} />
-      <div className={`${styles.blob} ${styles.blob3}`} />
-
-      <main className={styles.container}>
+    <main className={styles.container}>
 
         {/* Header */}
         <header className={styles.header}>
@@ -287,13 +284,8 @@ export default function CheckInPage() {
           {/* ── Step: Success ── */}
           {step === 'success' && (
             <div className={`${styles.step} ${styles.stepSuccess}`}>
-              <div className={styles.successAnimation}>
-                <div className={styles.successRing} />
-                <div className={styles.successCheck}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                </div>
+              <div className={styles.successBadge}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <h2 className={styles.successName}>{successData.name}</h2>
               <p className={styles.successMsg}>{successData.msg}</p>
@@ -303,6 +295,25 @@ export default function CheckInPage() {
                 onClick={resetAll}
               >
                 Check in another
+              </button>
+            </div>
+          )}
+
+          {/* ── Step: Already Checked In ── */}
+          {step === 'already' && (
+            <div className={`${styles.step} ${styles.stepAlready}`}>
+              <div className={styles.alreadyBadge}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <h2 className={styles.alreadyName}>{alreadyName}</h2>
+              <p className={styles.alreadyTitle}>Already checked in!</p>
+              <p className={styles.alreadyDesc}>This attendee has already been checked in today. No duplicate entry was recorded.</p>
+              <button
+                id="already-back-btn"
+                className={`${styles.btn} ${styles.btnAmber}`}
+                onClick={resetAll}
+              >
+                Try another number
               </button>
             </div>
           )}
@@ -331,7 +342,6 @@ export default function CheckInPage() {
         </footer>
 
       </main>
-    </>
   );
 }
 
